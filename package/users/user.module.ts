@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { USER_REPOSITORY_TOKEN } from './domain/user.repository.interface';
@@ -7,8 +7,9 @@ import { UserTypeOrmEntity } from './infrastructure/user-typeorm.entity';
 import { UserRepository } from './infrastructure/user.repository';
 import { CreateUserUseCase } from './application/create-user.use-case';
 import { UsersController } from './interface/dto/users.controller';
+import { AuthModule } from '@package/auth/auth.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([UserTypeOrmEntity])],
+  imports: [TypeOrmModule.forFeature([UserTypeOrmEntity]), forwardRef(() => AuthModule)],
   controllers: [UsersController],
   providers: [
     {

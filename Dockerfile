@@ -25,11 +25,14 @@ FROM node:20-alpine AS production
 
 ENV NODE_ENV production
 ENV TZ America/Sao_Paulo
+
 WORKDIR /usr/src/app
 
 COPY --from=builder /app/package.json ./
 
-RUN npm install --only=production
+RUN npm prune --production
+
+COPY --from=builder /app/node_modules ./node_modules
 
 COPY --from=builder /app/dist ./dist
 

@@ -9,17 +9,21 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes: 
-      - db_data:/var/lib;postgresql/data
+      - db_data:/var/lib:postgresql/data
   app:
-    image: oven/bun:alpine
+    image: chimera-backend:latest
     container_name: app
-    working_dir: /usr/src/app
-    volumes:
-      - .:/usr/src/app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: CHIMERA
+      DB_PASSWORD: CHIMERA
+      DB_NAME: CHIMERA
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_TIME: ${JWT_EXPIRATION_TIME}
     ports:
       - "3000:3000"
-    command: sh -c "bun install && bun start:dev"
     depends_on:
       - postgres
 volumes:
-  db_data: 
+  db_data:
