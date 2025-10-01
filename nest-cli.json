@@ -1,0 +1,17 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "./",
+  "entryFile": "infrastructure/http/main",
+  "compilerOptions": {
+    "tsConfigPath": "tsconfig.build.json",
+    "assets": [
+      {
+        "include": "package/**/*.proto",
+        "watchAssets": true
+      }
+    ]
+  },
+  "generateOptions": {
+    "spec": true
+  }
+}

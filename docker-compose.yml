@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes: 
+      - db_data:/var/lib;postgresql/data
+  app:
+    image: oven/bun:alpine
+    container_name: app
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
+    command: sh -c "bun install && bun start:dev"
+    depends_on:
+      - postgres
+volumes:
+  db_data: 

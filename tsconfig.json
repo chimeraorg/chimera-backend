@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2022",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "declarationDir": "./dist/types",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "strict": true,
+    "paths": {
+      "@config/*": ["config/*"],
+      "@infra/*": ["infrastructure/*"],
+      "@package/*": ["package/*"]
+    }
+  },
+  "include": ["**/*", ".eslintrc.js", ".prettierrc.js"],
+  "exclude": ["node_modules", "dist"]
+}
