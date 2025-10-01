@@ -2,8 +2,8 @@
 
 **High-Scale TypeScript Backend built with Clean Archtecture, NestJS, and PostgreSQL.**
 
-![Github Workflow Status](https://github.com/OWNER/REPOSITORY/actions/workflows/main.yml/badge.svg)
-![License](https://img.shields.io/badge/License-UNLICENSED-red)
+[![Actions](https://github.com/chimeraorg/chimera-backend/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/chimeraorg/chimera-backend/actions/workflows/main.yml)
+![License](https://img.shields.io/badge/License-MIT-red)
 ![TypeScript](https://img.shields.io/badge/Typescript-5.x-blue)
 ![NestJS](https://img.shields.io/badge/NestJS-10.x-red)
 ![Docker Multi-Stage](https://img.shields.io/badge/Docker-Multi--Stage-informational)
