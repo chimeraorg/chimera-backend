@@ -9,89 +9,85 @@ import { User } from '@package/users/domain/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { GenerateTokenPairUseCase } from './generate-token-pair.use-case';
 
-const mockUserRepository: jest.Mocked<IUserRepository> = {
+const VALID_PAYLOAD = { sub: 'mock-user-id', email: 'test@chimera.com' };
+
+const createMockRepository = () => ({
   findById: jest.fn(),
   findByEmail: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
-};
+});
 
-const mockJwtService: jest.Mocked<JwtService> = {
+const createMockJwtService = () => ({
   verifyAsync: jest.fn(),
   signAsync: jest.fn(),
-} as any;
+});
 
-const mockGenerateTokenPairUseCase: jest.Mocked<GenerateTokenPairUseCase> = {
+const createMockGenerateTokenPairUseCase = () => ({
   execute: jest.fn(),
-} as any;
+});
 
 describe('RefreshTokensUseCase', () => {
   let useCase: RefreshTokensUseCase;
-  let userRepository: jest.Mocked<IUserRepository>;
-  let jwtService: jest.Mocked<JwtService>;
+  let userRepository: ReturnType<typeof createMockRepository>;
+  let jwtService: ReturnType<typeof createMockJwtService>;
+  let generateTokenPairUseCase: ReturnType<typeof createMockGenerateTokenPairUseCase>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RefreshTokensUseCase,
-        { provide: USER_REPOSITORY_TOKEN, useValue: mockUserRepository },
-        { provide: JwtService, useValue: mockJwtService },
-        { provide: GenerateTokenPairUseCase, useValue: mockGenerateTokenPairUseCase },
-      ],
-    }).compile();
-
-    useCase = module.get<RefreshTokensUseCase>(RefreshTokensUseCase);
-    userRepository = module.get(USER_REPOSITORY_TOKEN);
-    jwtService = module.get(JwtService);
-
-    jest.clearAllMocks();
-  });
-
-  const mockUser = { getId: () => 'mock-user-id', getEmail: () => 'test@chimera.com' } as User;
+  const mockUser = { getId: () => VALID_PAYLOAD.sub, getEmail: () => VALID_PAYLOAD.email } as User;
   const mockTokenPair = {
     accessToken: 'new.access.token',
     refreshToken: 'new.refresh.token',
     accessTokenExpiresIn: '1h',
   };
 
-  it('should successfully generate new token pair if refresh token is valid', async () => {
-    const command: RefreshTokenCommand = { refreshToken: 'valid.refresh.token' };
+  const command: RefreshTokenCommand = { refreshToken: 'valid.refresh.token' };
 
-    jwtService.verifyAsync.mockResolvedValue({ sub: 'mock-user-id', email: 'test@chimera.com' });
+  beforeEach(async () => {
+    userRepository = createMockRepository();
+    jwtService = createMockJwtService();
+    generateTokenPairUseCase = createMockGenerateTokenPairUseCase();
 
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        RefreshTokensUseCase,
+        { provide: USER_REPOSITORY_TOKEN, useValue: userRepository },
+        { provide: JwtService, useValue: jwtService },
+        { provide: GenerateTokenPairUseCase, useValue: generateTokenPairUseCase },
+      ],
+    }).compile();
+
+    useCase = module.get<RefreshTokensUseCase>(RefreshTokensUseCase);
+  });
+
+  it('should successfully generate new token pair if refresh token is valid and user exists', async () => {
+    jwtService.verifyAsync.mockResolvedValue(VALID_PAYLOAD);
     userRepository.findById.mockResolvedValue(mockUser);
-
-    mockGenerateTokenPairUseCase.execute.mockResolvedValue(mockTokenPair);
+    generateTokenPairUseCase.execute.mockResolvedValue(mockTokenPair);
 
     const result = await useCase.execute(command);
 
     expect(result).toEqual(mockTokenPair);
     expect(jwtService.verifyAsync).toHaveBeenCalledWith(command.refreshToken);
-    expect(userRepository.findById).toHaveBeenCalledWith('mock-user-id');
-    expect(mockGenerateTokenPairUseCase.execute).toHaveBeenCalledWith(mockUser);
+    expect(userRepository.findById).toHaveBeenCalledWith(VALID_PAYLOAD.sub);
+    expect(generateTokenPairUseCase.execute).toHaveBeenCalledWith(mockUser);
   });
 
-  it('should throw UnauthorizedException if refresh token is invalid or expired', async () => {
-    const command: RefreshTokenCommand = { refreshToken: 'expired-token' };
-
-    jwtService.verifyAsync.mockRejectedValue(new Error('Jwt expired'));
+  it('should throw UnauthorizedException if JWT verification fails (e.g., expired)', async () => {
+    jwtService.verifyAsync.mockRejectedValue(new Error('Token signature is invalid'));
 
     await expect(useCase.execute(command)).rejects.toThrow(UnauthorizedException);
 
     expect(userRepository.findById).not.toHaveBeenCalled();
-    expect(mockGenerateTokenPairUseCase.execute).not.toHaveBeenCalled();
+    expect(generateTokenPairUseCase.execute).not.toHaveBeenCalled();
   });
 
-  it('should throw UnauthorizedException if user is not found for given token', async () => {
-    const command: RefreshTokenCommand = { refreshToken: 'token.for.ghost' };
-
-    jwtService.verifyAsync.mockResolvedValue({ sub: 'ghost-id', email: 'ghost@chimera.com' });
+  it('should throw UnauthorizedExpection if user is not found based on token payload', async () => {
+    jwtService.verifyAsync.mockResolvedValue(VALID_PAYLOAD);
     userRepository.findById.mockResolvedValue(null);
 
     await expect(useCase.execute(command)).rejects.toThrow(UnauthorizedException);
 
-    expect(jwtService.verifyAsync).toHaveBeenCalled();
-    expect(userRepository.findById).toHaveBeenCalledWith('ghost-id');
-    expect(mockGenerateTokenPairUseCase.execute).not.toHaveBeenCalled();
+    expect(userRepository.findById).toHaveBeenCalledWith(VALID_PAYLOAD.sub);
+    expect(generateTokenPairUseCase.execute).not.toHaveBeenCalled();
   });
 });
