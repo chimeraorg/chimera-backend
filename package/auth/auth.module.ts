@@ -27,7 +27,7 @@ import { GenerateTokenPairUseCase } from './application/generate-token-pair.use-
     SecurityModule,
   ],
   controllers: [AuthController],
-  providers: [LoginUseCase, JwtStrategy],
-  exports: [JwtModule, PassportModule, GenerateTokenPairUseCase],
+  providers: [LoginUseCase, JwtStrategy, GenerateTokenPairUseCase],
+  exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}

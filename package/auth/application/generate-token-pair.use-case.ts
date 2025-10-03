@@ -17,7 +17,7 @@ export class GenerateTokenPairUseCase {
   ) {}
 
   public async execute(user: User): Promise<TokenPairOutput> {
-    const payload = {
+    const basePayload = {
       sub: user.getId(),
       email: user.getEmail(),
     };
@@ -26,14 +26,13 @@ export class GenerateTokenPairUseCase {
       secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: this.configService.get<string>('JWT_EXPIRATION_TIME') || '1h',
     };
-    const accessToken = await this.jwtService.signAsync(payload, accessOptions);
+    const accessToken = await this.jwtService.signAsync(basePayload, accessOptions);
 
     const refreshOptions = {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIs: this.configService.get<string>('JWT_REFRESH_EXPIRATION_TIME') || '7d',
-      payload: { ...payload, type: 'refresh' },
+      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRATION_TIME') || '7d',
     };
-    const refreshToken = await this.jwtService.signAsync(payload, refreshOptions);
+    const refreshToken = await this.jwtService.signAsync(basePayload, refreshOptions);
 
     return {
       accessToken,

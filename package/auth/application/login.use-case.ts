@@ -10,23 +10,20 @@ import {
   ICryptographyService,
   CRYPTOGRAPHY_SERVICE_TOKEN,
 } from '@infra/security/cryptography.service.interface';
-import { cp } from 'fs';
 
 export interface LoginCommand {
   email: string;
   passwordPlain: string;
 }
 
-export interface LoginOutput extends TokenPairOutput {
-  accessToken: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface LoginOutput extends TokenPairOutput {}
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     @Inject(USER_REPOSITORY_TOKEN)
     private readonly userRepository: IUserRepository,
-
     @Inject(CRYPTOGRAPHY_SERVICE_TOKEN)
     private readonly cryptographyService: ICryptographyService,
     private readonly generateTokenPairUseCase: GenerateTokenPairUseCase,
