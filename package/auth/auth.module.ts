@@ -9,6 +9,7 @@ import { LoginUseCase } from './application/login.use-case';
 import { AuthController } from './interface/dto/auth.controller';
 import { JwtStrategy } from './interface/dto/jwt.strategy';
 import { GenerateTokenPairUseCase } from './application/generate-token-pair.use-case';
+import { RefreshTokensUseCase } from './application/refresh-tokens.use-case';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { GenerateTokenPairUseCase } from './application/generate-token-pair.use-
     SecurityModule,
   ],
   controllers: [AuthController],
-  providers: [LoginUseCase, JwtStrategy, GenerateTokenPairUseCase],
+  providers: [LoginUseCase, JwtStrategy, GenerateTokenPairUseCase, RefreshTokensUseCase],
   exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}
