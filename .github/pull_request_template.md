@@ -19,6 +19,6 @@ _Describe the goal of this PR and what issues it resolved. Be consice._
 ## Technical Details
 - **Module(s) Affected:** `[e.g., auth, users, infrastructure/security]`
 - **Breaking Changes?** [ ] Yes / [ ] No
-- **If Yes**, provide details: ** ## Testing Notes
+- **If Yes, provide details:** ## Testing Notes
 
 _Steps taken to manually test the feature (if applicable), and commands used to verify (e.g., `npm run test:cov`)._
