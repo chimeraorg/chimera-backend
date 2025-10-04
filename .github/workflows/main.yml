@@ -35,7 +35,7 @@ jobs:
           command: test
           args: --severity-threshold=high
         env:
-          SYNK_TOKEN: ${{ secrets.SYNK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run ESLint and Formatting Check
         run: npm run lint
