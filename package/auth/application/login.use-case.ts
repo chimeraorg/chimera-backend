@@ -1,5 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { GenerateTokenPairUseCase, TokenPairOutput } from './generate-token-pair.use-case';
 
 import {
   IUserRepository,
@@ -15,19 +16,17 @@ export interface LoginCommand {
   passwordPlain: string;
 }
 
-export interface LoginOutput {
-  accessToken: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface LoginOutput extends TokenPairOutput {}
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     @Inject(USER_REPOSITORY_TOKEN)
     private readonly userRepository: IUserRepository,
-
     @Inject(CRYPTOGRAPHY_SERVICE_TOKEN)
     private readonly cryptographyService: ICryptographyService,
-    private readonly jwtService: JwtService,
+    private readonly generateTokenPairUseCase: GenerateTokenPairUseCase,
   ) {}
 
   public async execute(command: LoginCommand): Promise<LoginOutput> {
@@ -46,13 +45,6 @@ export class LoginUseCase {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
-    const payload = {
-      sub: user.getId(), // 'sub' (subject) é o padrão JWT
-      email: user.getEmail(),
-    };
-
-    const accessToken = await this.jwtService.signAsync(payload);
-
-    return { accessToken };
+    return this.generateTokenPairUseCase.execute(user);
   }
 }

@@ -79,7 +79,7 @@ We rely exclusively on migrations for schema changes.
 npm run migration:generate -- infrastructure/database/migrations/NewFeatureSchema
 ```
 
-2. **Run Migrations (Apply to DB):
+2. **Run Migrations (Apply to DB):**
 ```bash
 npm run migration:run
 ```
