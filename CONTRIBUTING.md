@@ -27,11 +27,11 @@ We use a simplified GitFlw model. **All contributions must be made via Pull Requ
   - `test`: Adding/refactoring tests (e.g., `test(auth): Cover edge cases in LoginUseCase`)
 
 ## 3. Pull Request Guidelines
-- **Target Branch:** Always target the `main` branch (unless instructed otherwise).
-- **Quality Gates:** Your PR will require passing CI checks (Lint, Build, Tests) and receiving **at leat two** approving reviews from code owners.
-- **Self-Review:** Before requesting a review, ensure the [pull_request_template.md](.github/pull_request_template.md) checklist is complete.
+  - **Target Branch:** Always target the `main` branch (unless instructed otherwise).
+  - **Quality Gates:** Your PR will require passing CI checks (Lint, Build, Tests) and receiving **at leat two** approving reviews from code owners.
+  - **Self-Review:** Before requesting a review, ensure the [pull_request_template.md](.github/pull_request_template.md) checklist is complete.
 
-- ## 4. Code Standards
-- **TypeScript:** Strict mode is enforced. Avoid using `any` unless absolutely necessary (and justified).
-- **Clean Architecture:** Ensure separation of concerns. Domain should not import Infrastructure.
-- **Testing:** New logic must have dedicated unit tests. Run `npm run test:cov` locally before pushing.
+ ## 4. Code Standards
+  - **TypeScript:** Strict mode is enforced. Avoid using `any` unless absolutely necessary (and justified).
+  - **Clean Architecture:** Ensure separation of concerns. Domain should not import Infrastructure.
+  - **Testing:** New logic must have dedicated unit tests. Run `npm run test:cov` locally before pushing.
