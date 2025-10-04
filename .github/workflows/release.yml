@@ -40,12 +40,14 @@ jobs:
 
       - name: Run Semantic Release
         id: version # ID para capturar a versão de saída
-        uses: cycjimmy/semantic-release-action@v4 
+        uses: cycjimmy/semantic-release-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          semantic_version: 19 
-          extra_plugins: '@semantic-release/changelog @semantic-release/git @semantic-release/exec'
+          extra_plugins: |
+            @semantic-release/changelog 
+            @semantic-release/git 
+            @semantic-release/exec
 
   # ----------------------------------------------------------------------
   # JOB 2: DOCKER BUILD AND
