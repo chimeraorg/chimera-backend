@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Snyk Vulnerability Scan 
-        uses: sync/acstions/node@master
+        uses: sync/actions/node@master
         with:
           command: test
           args: --severity-thrwshold=high
