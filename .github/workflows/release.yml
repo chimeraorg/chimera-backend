@@ -1,0 +1,92 @@
+# .github/workflows/release.yml
+
+name: Automated Semantic Release & Docker CD
+
+on:
+  push:
+    branches:
+      - main 
+jobs:
+  # ----------------------------------------------------------------------
+  # JOB 1: SEMVER AND TAGGING
+  # ----------------------------------------------------------------------
+  semantic-release:
+    name: Semantic Versioning and Release
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    outputs:
+      release_version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+          token: ${{ secrets.GITHUB_TOKEN }} 
+          
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Semantic Release
+        id: version # ID para capturar a versão de saída
+        uses: cycjimmy/semantic-release-action@v4 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          semantic_version: 19 
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+            @semantic-release/exec
+
+  # ----------------------------------------------------------------------
+  # JOB 2: DOCKER BUILD AND
+#----------------------------------------------------------------------
+  docker-build-and-push:
+    name: Docker Build and Push
+    needs: semantic-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref, event=tag # Usa a tag Git (vX.Y.Z)
+            type=raw, value=latest # Sempre tagueia a última release como 'latest'
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha 
+          cache-to: type=gha,mode=max
