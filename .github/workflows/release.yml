@@ -45,10 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           semantic_version: 19 
-          extra_plugins: |
-            @semantic-release/changelog
-            @semantic-release/git
-            @semantic-release/exec
+          extra_plugins: '@semantic-release/changelog @semantic-release/git @semantic-release/exec'
 
   # ----------------------------------------------------------------------
   # JOB 2: DOCKER BUILD AND
